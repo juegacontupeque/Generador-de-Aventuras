@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
             border-radius: 20px;
@@ -250,10 +250,25 @@
         <header class="header">
             <h1>🎪 Generador de Asombro Instantáneo</h1>
             <p class="subtitle">Tu asistente personal para crear magia familiar en segundos</p>
-            <div class="counter">✨ 365+ Actividades Disponibles ✨</div>
+            <div class="counter">✨ 365 Actividades Disponibles ✨</div>
         </header>
 
         <div class="generator-container">
+            <!-- Selector de Módulo -->
+            <div class="selector-group">
+                <h3>📚 ¿Qué MÓDULO te interesa?</h3>
+                <div class="selectors">
+                    <button class="selector-btn" data-category="modulo" data-value="cualquiera">Cualquiera</button>
+                    <button class="selector-btn" data-category="modulo" data-value="express">Actividades Express</button>
+                    <button class="selector-btn" data-category="modulo" data-value="misiones">Misiones - Colaboración</button>
+                    <button class="selector-btn" data-category="modulo" data-value="emociones">Juegos de Emociones</button>
+                    <button class="selector-btn" data-category="modulo" data-value="tecnologia">Tecnología con Propósito</button>
+                    <button class="selector-btn" data-category="modulo" data-value="airelibre">Aventuras al Aire Libre</button>
+                    <button class="selector-btn" data-category="modulo" data-value="proyectos">Mini Proyectos Especiales</button>
+                    <button class="selector-btn" data-category="modulo" data-value="cientificos">Pequeños Científicos</button>
+                </div>
+            </div>
+
             <!-- Selector de Tiempo -->
             <div class="selector-group">
                 <h3>⏰ ¿Cuánto TIEMPO tienes?</h3>
@@ -261,6 +276,7 @@
                     <button class="selector-btn" data-category="tiempo" data-value="5">5 min</button>
                     <button class="selector-btn" data-category="tiempo" data-value="15">15 min</button>
                     <button class="selector-btn" data-category="tiempo" data-value="30">30 min</button>
+                    <button class="selector-btn" data-category="tiempo" data-value="cualquiera">Cualquiera</button>
                 </div>
             </div>
 
@@ -271,6 +287,7 @@
                     <button class="selector-btn" data-category="estado" data-value="aventura">¡Aventura!</button>
                     <button class="selector-btn" data-category="estado" data-value="calma">Calma</button>
                     <button class="selector-btn" data-category="estado" data-value="risa">Risa</button>
+                    <button class="selector-btn" data-category="estado" data-value="cualquiera">Cualquiera</button>
                 </div>
             </div>
 
@@ -281,6 +298,7 @@
                     <button class="selector-btn" data-category="materiales" data-value="nada">Nada</button>
                     <button class="selector-btn" data-category="materiales" data-value="basicos">Básicos</button>
                     <button class="selector-btn" data-category="materiales" data-value="magia">Magia Pura</button>
+                    <button class="selector-btn" data-category="materiales" data-value="cualquiera">Cualquiera</button>
                 </div>
             </div>
 
@@ -319,7 +337,7 @@
     </div>
 
     <script>
-        // DATOS COMPLETOS DE LAS 365+ ACTIVIDADES
+        // DATOS COMPLETOS DE LAS 365 ACTIVIDADES
         const actividades = [
             // ACTIVIDADES EXPRESS (Páginas 5-17) - 39 actividades
             {id: 1, nombre: "Pelota Viajera", modulo: "Actividades Express", pagina: 5, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
@@ -572,11 +590,12 @@
             // MINI PROYECTOS ESPECIALES (Páginas 100-121) - 50 actividades
             {id: 239, nombre: "Mini Exposición de Arte", modulo: "Mini Proyectos Especiales", pagina: 100, tiempo: [30], estado: ["calma","risa"], materiales: ["basicos","magia"]},
             {id: 240, nombre: "Día del Inventor", modulo: "Mini Proyectos Especiales", pagina: 100, tiempo: [30], estado: ["aventura","risa"], materiales: ["basicos","magia"]},
-            // ... (aquí continuarían las demás actividades)
+            // ... (aquí continuarían las demás actividades hasta completar las 365)
         ];
 
         // Variables para almacenar las selecciones
         let selecciones = {
+            modulo: null,
             tiempo: null,
             estado: null,
             materiales: null
@@ -603,7 +622,7 @@
 
         // Función para verificar si todas las categorías están seleccionadas
         function verificarSeleccionesCompletas() {
-            const todasSeleccionadas = selecciones.tiempo && selecciones.estado && selecciones.materiales;
+            const todasSeleccionadas = selecciones.modulo && selecciones.tiempo && selecciones.estado && selecciones.materiales;
             const generarBtn = document.getElementById('generarBtn');
             
             if (todasSeleccionadas) {
@@ -616,10 +635,45 @@
         // Función para generar actividad aleatoria basada en las selecciones
         function generarActividad() {
             // Filtrar actividades que coincidan con las selecciones
-            const actividadesFiltradas = actividades.filter(actividad => {
-                return actividad.tiempo.includes(parseInt(selecciones.tiempo)) &&
-                       actividad.estado.includes(selecciones.estado) &&
-                       actividad.materiales.includes(selecciones.materiales);
+            let actividadesFiltradas = actividades.filter(actividad => {
+                // Verificar módulo (si no es "cualquiera")
+                if (selecciones.modulo !== "cualquiera") {
+                    const moduloMap = {
+                        "express": "Actividades Express",
+                        "misiones": "Misiones - Colaboración en el Hogar", 
+                        "emociones": "Juegos de Emociones y Conexión",
+                        "tecnologia": "Tecnología con Propósito",
+                        "airelibre": "Aventuras al Aire Libre",
+                        "proyectos": "Mini Proyectos Especiales",
+                        "cientificos": "Pequeños Científicos"
+                    };
+                    if (actividad.modulo !== moduloMap[selecciones.modulo]) {
+                        return false;
+                    }
+                }
+                
+                // Verificar tiempo (si no es "cualquiera")
+                if (selecciones.tiempo !== "cualquiera") {
+                    if (!actividad.tiempo.includes(parseInt(selecciones.tiempo))) {
+                        return false;
+                    }
+                }
+                
+                // Verificar estado (si no es "cualquiera")
+                if (selecciones.estado !== "cualquiera") {
+                    if (!actividad.estado.includes(selecciones.estado)) {
+                        return false;
+                    }
+                }
+                
+                // Verificar materiales (si no es "cualquiera")
+                if (selecciones.materiales !== "cualquiera") {
+                    if (!actividad.materiales.includes(selecciones.materiales)) {
+                        return false;
+                    }
+                }
+                
+                return true;
             });
             
             // Si no hay actividades que coincidan, mostrar un mensaje
@@ -644,6 +698,7 @@
             // Actualizar los tags seleccionados
             const selectedTags = document.getElementById('selectedTags');
             selectedTags.innerHTML = `
+                <div class="tag">${selecciones.modulo}</div>
                 <div class="tag">${selecciones.tiempo} min</div>
                 <div class="tag">${selecciones.estado}</div>
                 <div class="tag">${selecciones.materiales}</div>
