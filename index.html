@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Asombro Instantáneo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .counter {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 10px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .generator-container {
+            padding: 30px;
+        }
+
+        .selector-group {
+            margin-bottom: 30px;
+        }
+
+        .selector-group h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .selectors {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .selector-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            color: #666;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .selector-btn:hover {
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        .selector-btn.active {
+            border-color: #e74c3c;
+            background: #e74c3c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.4);
+        }
+
+        .generate-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .resultado-container {
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .resultado-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .resultado-header h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .selected-tags {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #3498db;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .actividad-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #e74c3c;
+            margin-bottom: 20px;
+        }
+
+        .actividad-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .actividad-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .actividad-details {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e74c3c;
+        }
+
+        .actividad-details p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .new-activity-btn {
+            width: 100%;
+            padding: 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .new-activity-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            background: #34495e;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .selectors {
+                flex-direction: column;
+            }
+            
+            .selector-btn {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎪 Generador de Asombro Instantáneo</h1>
+            <p class="subtitle">Tu asistente personal para crear magia familiar en segundos</p>
+            <div class="counter">✨ 365+ Actividades Disponibles ✨</div>
+        </header>
+
+        <div class="generator-container">
+            <!-- Selector de Tiempo -->
+            <div class="selector-group">
+                <h3>⏰ ¿Cuánto TIEMPO tienes?</h3>
+                <div class="selectors">
+                    <button class="selector-btn" data-category="tiempo" data-value="5">5 min</button>
+                    <button class="selector-btn" data-category="tiempo" data-value="15">15 min</button>
+                    <button class="selector-btn" data-category="tiempo" data-value="30">30 min</button>
+                </div>
+            </div>
+
+            <!-- Selector de Estado de Ánimo -->
+            <div class="selector-group">
+                <h3>🎭 ¿Qué ESTADO DE ÁNIMO predomina?</h3>
+                <div class="selectors">
+                    <button class="selector-btn" data-category="estado" data-value="aventura">¡Aventura!</button>
+                    <button class="selector-btn" data-category="estado" data-value="calma">Calma</button>
+                    <button class="selector-btn" data-category="estado" data-value="risa">Risa</button>
+                </div>
+            </div>
+
+            <!-- Selector de Materiales -->
+            <div class="selector-group">
+                <h3>🎨 ¿Qué MATERIALES tienes?</h3>
+                <div class="selectors">
+                    <button class="selector-btn" data-category="materiales" data-value="nada">Nada</button>
+                    <button class="selector-btn" data-category="materiales" data-value="basicos">Básicos</button>
+                    <button class="selector-btn" data-category="materiales" data-value="magia">Magia Pura</button>
+                </div>
+            </div>
+
+            <!-- Botón Generar -->
+            <button id="generarBtn" class="generate-btn" disabled>
+                🪄 ¡Generar Actividad Mágica!
+            </button>
+
+            <!-- Resultado -->
+            <div id="resultado" class="resultado-container" style="display: none;">
+                <div class="resultado-header">
+                    <h2>¡Tu Actividad Perfecta!</h2>
+                    <div class="selected-tags" id="selectedTags"></div>
+                </div>
+                <div class="actividad-card">
+                    <h3 id="actividadNombre"></h3>
+                    <div class="actividad-info">
+                        <span id="actividadModulo"></span>
+                        <span id="actividadPagina"></span>
+                    </div>
+                    <div class="actividad-details">
+                        <p>📖 <span class="highlight">Encuentra esta actividad completa en la página <span id="paginaNumero"></span> de tu Kit SOS</span></p>
+                        <p>🎯 <span class="highlight">Incluye: objetivo, materiales necesarios, instrucciones detalladas y variaciones por edad</span></p>
+                        <p>✨ <span class="highlight">¡Todo listo para conectar en familia!</span></p>
+                    </div>
+                </div>
+                <button id="nuevaActividadBtn" class="new-activity-btn">
+                    🔄 Generar Otra Actividad
+                </button>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>✨ Parte del Kit 365 Actividades Para Conectar en Familia ✨</p>
+        </footer>
+    </div>
+
+    <script>
+        // DATOS COMPLETOS DE LAS 365+ ACTIVIDADES
+        const actividades = [
+            // ACTIVIDADES EXPRESS (Páginas 5-17) - 39 actividades
+            {id: 1, nombre: "Pelota Viajera", modulo: "Actividades Express", pagina: 5, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 2, nombre: "Camino de Obstáculos Casero", modulo: "Actividades Express", pagina: 5, tiempo: [15,30], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 3, nombre: "Busca y Encuentra Sonoro", modulo: "Actividades Express", pagina: 5, tiempo: [5,15], estado: ["aventura","calma"], materiales: ["basicos"]},
+            {id: 4, nombre: "Cuento Saltarín", modulo: "Actividades Express", pagina: 6, tiempo: [15,30], estado: ["calma","risa"], materiales: ["nada"]},
+            {id: 5, nombre: "Sombras Mágicas", modulo: "Actividades Express", pagina: 6, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 6, nombre: "Pies de Papel", modulo: "Actividades Express", pagina: 6, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 7, nombre: "Mini Baile Congelado", modulo: "Actividades Express", pagina: 7, tiempo: [5,15], estado: ["risa","aventura"], materiales: ["nada"]},
+            {id: 8, nombre: "Caza de Letras", modulo: "Actividades Express", pagina: 7, tiempo: [5,15], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 9, nombre: "Dibujo a Ciegas", modulo: "Actividades Express", pagina: 7, tiempo: [5,15], estado: ["risa","calma"], materiales: ["basicos"]},
+            {id: 10, nombre: "Relevo de Objetos", modulo: "Actividades Express", pagina: 8, tiempo: [15,30], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 11, nombre: "Historia en Cadena", modulo: "Actividades Express", pagina: 8, tiempo: [5,15], estado: ["calma","risa"], materiales: ["nada"]},
+            {id: 12, nombre: "Lluvia de Pelotas", modulo: "Actividades Express", pagina: 8, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 13, nombre: "Super Detective de Colores", modulo: "Actividades Express", pagina: 9, tiempo: [5,15], estado: ["aventura","calma"], materiales: ["nada"]},
+            {id: 14, nombre: "Torre de Vasos", modulo: "Actividades Express", pagina: 9, tiempo: [5,15], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 15, nombre: "Atrapa el Sonido", modulo: "Actividades Express", pagina: 9, tiempo: [5,15], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 16, nombre: "Construcción Ciega", modulo: "Actividades Express", pagina: 10, tiempo: [15,30], estado: ["calma","risa"], materiales: ["basicos"]},
+            {id: 17, nombre: "Reto de Saltos Matemáticos", modulo: "Actividades Express", pagina: 10, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 18, nombre: "Caza de Palabras", modulo: "Actividades Express", pagina: 10, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 19, nombre: "Carrera de Cucharas", modulo: "Actividades Express", pagina: 11, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 20, nombre: "Reto de Posturas", modulo: "Actividades Express", pagina: 11, tiempo: [5,15], estado: ["risa","aventura"], materiales: ["nada"]},
+            {id: 21, nombre: "Teléfono Loco", modulo: "Actividades Express", pagina: 11, tiempo: [5,15], estado: ["risa","calma"], materiales: ["nada"]},
+            {id: 22, nombre: "Siluetas con Cuerdas", modulo: "Actividades Express", pagina: 12, tiempo: [5,15], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 23, nombre: "Reto de Palabras Rápidas", modulo: "Actividades Express", pagina: 12, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["nada"]},
+            {id: 24, nombre: "Caminata de Animales", modulo: "Actividades Express", pagina: 12, tiempo: [5,15], estado: ["risa","aventura"], materiales: ["nada"]},
+            {id: 25, nombre: "Construcción con Pinzas y Palillos", modulo: "Actividades Express", pagina: 13, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 26, nombre: "Eco Musical", modulo: "Actividades Express", pagina: 13, tiempo: [5,15], estado: ["calma","risa"], materiales: ["nada"]},
+            {id: 27, nombre: "Búsqueda de Texturas", modulo: "Actividades Express", pagina: 13, tiempo: [5,15], estado: ["aventura","calma"], materiales: ["basicos"]},
+            {id: 28, nombre: "Carrera de Globos", modulo: "Actividades Express", pagina: 14, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 29, nombre: "Cadena de Saltos", modulo: "Actividades Express", pagina: 14, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["nada"]},
+            {id: 30, nombre: "Memoria Sensorial", modulo: "Actividades Express", pagina: 14, tiempo: [5,15], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 31, nombre: "Simón Dice", modulo: "Actividades Express", pagina: 15, tiempo: [5,15], estado: ["risa","aventura"], materiales: ["nada"]},
+            {id: 32, nombre: "Saltos de Números", modulo: "Actividades Express", pagina: 15, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 33, nombre: "Construcción de Puentes", modulo: "Actividades Express", pagina: 15, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 34, nombre: "Caminata del Silencio", modulo: "Actividades Express", pagina: 16, tiempo: [5,15], estado: ["calma"], materiales: ["nada"]},
+            {id: 35, nombre: "Salto de Color", modulo: "Actividades Express", pagina: 16, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 36, nombre: "Búsqueda de Sombras", modulo: "Actividades Express", pagina: 16, tiempo: [5,15], estado: ["aventura","calma"], materiales: ["basicos"]},
+            {id: 37, nombre: "Historias con Objetos", modulo: "Actividades Express", pagina: 17, tiempo: [15,30], estado: ["calma","risa"], materiales: ["basicos"]},
+            {id: 38, nombre: "Caminata de Equilibrio con Libro", modulo: "Actividades Express", pagina: 17, tiempo: [5,15], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 39, nombre: "Puzzle Casero", modulo: "Actividades Express", pagina: 17, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["basicos"]},
+
+            // MISIONES - COLABORACIÓN EN EL HOGAR (Páginas 19-36) - 50 actividades
+            {id: 40, nombre: "Mini Chef por un Día", modulo: "Misiones - Colaboración en el Hogar", pagina: 19, tiempo: [30], estado: ["calma","risa"], materiales: ["basicos","magia"]},
+            {id: 41, nombre: "Guardián de las Plantas", modulo: "Misiones - Colaboración en el Hogar", pagina: 19, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 42, nombre: "Inspector de Juguetes Perdidos", modulo: "Misiones - Colaboración en el Hogar", pagina: 19, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 43, nombre: "Inventario de Frutas y Verduras", modulo: "Misiones - Colaboración en el Hogar", pagina: 20, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 44, nombre: "Pequeño Organizador de Ropa", modulo: "Misiones - Colaboración en el Hogar", pagina: 20, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 45, nombre: "Guardianes del Reciclaje", modulo: "Misiones - Colaboración en el Hogar", pagina: 20, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 46, nombre: "Mini Ayudante del Polvo", modulo: "Misiones - Colaboración en el Hogar", pagina: 21, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 47, nombre: "Décoradores de la Mesa", modulo: "Misiones - Colaboración en el Hogar", pagina: 21, tiempo: [5,15], estado: ["calma","risa"], materiales: ["basicos"]},
+            {id: 48, nombre: "Ronda de Agua para Mascotas", modulo: "Misiones - Colaboración en el Hogar", pagina: 21, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 49, nombre: "Supervisores de Puertas y Ventanas", modulo: "Misiones - Colaboración en el Hogar", pagina: 22, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 50, nombre: "Capitán del Lavado de Manos", modulo: "Misiones - Colaboración en el Hogar", pagina: 22, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 51, nombre: "Comandante de la Hora de Dormir", modulo: "Misiones - Colaboración en el Hogar", pagina: 22, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 52, nombre: "Guardianes del Agua Responsable", modulo: "Misiones - Colaboración en el Hogar", pagina: 23, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 53, nombre: "Guardianes de los Zapatos", modulo: "Misiones - Colaboración en el Hogar", pagina: 23, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 54, nombre: "Supervisores de Mochilas", modulo: "Misiones - Colaboración en el Hogar", pagina: 23, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 55, nombre: "Detectives de Zapatos Perdidos", modulo: "Misiones - Colaboración en el Hogar", pagina: 24, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 56, nombre: "Pequeños Supervisores del Refrigerador", modulo: "Misiones - Colaboración en el Hogar", pagina: 24, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 57, nombre: "Recolectores de Libros Desordenados", modulo: "Misiones - Colaboración en el Hogar", pagina: 24, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 58, nombre: "Mini Administrador de Tiempo", modulo: "Misiones - Colaboración en el Hogar", pagina: 25, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 59, nombre: "Pequeños Organizadores de Zapatos de Visitas", modulo: "Misiones - Colaboración en el Hogar", pagina: 25, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 60, nombre: "Exploradores de Polvo Bajo la Cama", modulo: "Misiones - Colaboración en el Hogar", pagina: 25, tiempo: [5,15], estado: ["aventura"], materiales: ["basicos"]},
+            {id: 61, nombre: "Mini Recolectores de Ropa Sucia", modulo: "Misiones - Colaboración en el Hogar", pagina: 26, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 62, nombre: "Mini Chef de Postres Saludables", modulo: "Misiones - Colaboración en el Hogar", pagina: 26, tiempo: [15,30], estado: ["calma","risa"], materiales: ["basicos","magia"]},
+            {id: 63, nombre: "Encargados de la Música del Hogar", modulo: "Misiones - Colaboración en el Hogar", pagina: 26, tiempo: [5], estado: ["risa"], materiales: ["magia"]},
+            {id: 64, nombre: "Guardianes de la Luz", modulo: "Misiones - Colaboración en el Hogar", pagina: 27, tiempo: [5], estado: ["calma"], materiales: ["nada"]},
+            {id: 65, nombre: "Supervisores de Almohadas y Sábanas", modulo: "Misiones - Colaboración en el Hogar", pagina: 27, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 66, nombre: "Mini Floristas del Hogar", modulo: "Misiones - Colaboración en el Hogar", pagina: 27, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 67, nombre: "Ayudantes del Recado Rápido", modulo: "Misiones - Colaboración en el Hogar", pagina: 28, tiempo: [5], estado: ["aventura"], materiales: ["nada"]},
+            {id: 68, nombre: "Cuidadores del Agua para Plantas", modulo: "Misiones - Colaboración en el Hogar", pagina: 28, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 69, nombre: "Mini Organizadores del Botiquín Familiar", modulo: "Misiones - Colaboración en el Hogar", pagina: 28, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 70, nombre: "Pequeños Planificadores de Menú Semanal", modulo: "Misiones - Colaboración en el Hogar", pagina: 29, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 71, nombre: "Guardianes del Desayuno Listo", modulo: "Misiones - Colaboración en el Hogar", pagina: 29, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 72, nombre: "Inspectores de Bolsas de Compras", modulo: "Misiones - Colaboración en el Hogar", pagina: 29, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 73, nombre: "Inspectores de la Despensa Ordenada", modulo: "Misiones - Colaboración en el Hogar", pagina: 30, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 74, nombre: "Guardianes de la Biblioteca Familiar", modulo: "Misiones - Colaboración en el Hogar", pagina: 30, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 75, nombre: "Inspectores de Puertas Limpias", modulo: "Misiones - Colaboración en el Hogar", pagina: 30, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 76, nombre: "Inspectores de Juguetes Perdidos", modulo: "Misiones - Colaboración en el Hogar", pagina: 31, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 77, nombre: "Mini Inspectores del Clóset", modulo: "Misiones - Colaboración en el Hogar", pagina: 31, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 78, nombre: "Encargados de la Canasta de Picnic Familiar", modulo: "Misiones - Colaboración en el Hogar", pagina: 31, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 79, nombre: "Guardianes de la Música del Día", modulo: "Misiones - Colaboración en el Hogar", pagina: 32, tiempo: [5], estado: ["risa"], materiales: ["magia"]},
+            {id: 80, nombre: "Guardianes de las Ventanas Limpias", modulo: "Misiones - Colaboración en el Hogar", pagina: 32, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 81, nombre: "Guardianes de los Cubiertos Limpios", modulo: "Misiones - Colaboración en el Hogar", pagina: 32, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 82, nombre: "Detectives de Paredes Limpias", modulo: "Misiones - Colaboración en el Hogar", pagina: 33, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 83, nombre: "Encargados de Velas Aromáticas o Difusores", modulo: "Misiones - Colaboración en el Hogar", pagina: 33, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 84, nombre: "Ayudantes del Botón de Lavadora", modulo: "Misiones - Colaboración en el Hogar", pagina: 33, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 85, nombre: "Mini Guías del Orden del Baño", modulo: "Misiones - Colaboración en el Hogar", pagina: 34, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 86, nombre: "Ayudantes de la Lista de Compras", modulo: "Misiones - Colaboración en el Hogar", pagina: 34, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 87, nombre: "Pequeños Maestros del Reciclaje Creativo", modulo: "Misiones - Colaboración en el Hogar", pagina: 34, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 88, nombre: "Recolectores de Basura Reciclable", modulo: "Misiones - Colaboración en el Hogar", pagina: 35, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 89, nombre: "Mini Organizadores de Ropa Sucia", modulo: "Misiones - Colaboración en el Hogar", pagina: 35, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+
+            // JUEGOS DE EMOCIONES Y CONEXIÓN (Páginas 38-57) - 50 actividades
+            {id: 90, nombre: "El Semáforo de las Emociones", modulo: "Juegos de Emociones y Conexión", pagina: 38, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 91, nombre: "El Termómetro de la Calma", modulo: "Juegos de Emociones y Conexión", pagina: 38, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 92, nombre: "La Caja de los Abrazo-Mensajes", modulo: "Juegos de Emociones y Conexión", pagina: 38, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 93, nombre: "Las Pulseras de la Amistad Familiar", modulo: "Juegos de Emociones y Conexión", pagina: 39, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 94, nombre: "El Bote de la Calma Musical", modulo: "Juegos de Emociones y Conexión", pagina: 39, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 95, nombre: "El Reloj de los Abrazos", modulo: "Juegos de Emociones y Conexión", pagina: 39, tiempo: [5], estado: ["calma"], materiales: ["nada"]},
+            {id: 96, nombre: "El Mural de los Recuerdos Felices", modulo: "Juegos de Emociones y Conexión", pagina: 40, tiempo: [30], estado: ["calma"], materiales: ["basicos","magia"]},
+            {id: 97, nombre: "El Teléfono de los Mensajes Cariñosos", modulo: "Juegos de Emociones y Conexión", pagina: 40, tiempo: [5,15], estado: ["calma","risa"], materiales: ["basicos"]},
+            {id: 98, nombre: "La Caja de las Sorpresas Positivas", modulo: "Juegos de Emociones y Conexión", pagina: 40, tiempo: [5,15], estado: ["calma","risa"], materiales: ["basicos"]},
+            {id: 99, nombre: "El Cojín de la Confianza", modulo: "Juegos de Emociones y Conexión", pagina: 41, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 100, nombre: "La Caja de los Secretos Felices", modulo: "Juegos de Emociones y Conexión", pagina: 41, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 101, nombre: "El Semáforo de las Palabras Amables", modulo: "Juegos de Emociones y Conexión", pagina: 41, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 102, nombre: "Historias Locas en Familia", modulo: "Juegos de Emociones y Conexión", pagina: 42, tiempo: [15,30], estado: ["risa"], materiales: ["nada"]},
+            {id: 103, nombre: "Mimos y Adivinanzas", modulo: "Juegos de Emociones y Conexión", pagina: 42, tiempo: [5,15], estado: ["risa","aventura"], materiales: ["basicos"]},
+            {id: 104, nombre: "La Rueda de los Cumplidos", modulo: "Juegos de Emociones y Conexión", pagina: 43, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 105, nombre: "Círculo de Respiración de Colores", modulo: "Juegos de Emociones y Conexión", pagina: 43, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 106, nombre: "La Caja del Perdón", modulo: "Juegos de Emociones y Conexión", pagina: 43, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 107, nombre: "La Caja de las Ideas Felices", modulo: "Juegos de Emociones y Conexión", pagina: 44, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 108, nombre: "El Puente de los Abrazos", modulo: "Juegos de Emociones y Conexión", pagina: 44, tiempo: [5], estado: ["calma"], materiales: ["nada"]},
+            {id: 109, nombre: "El Juego del Tesoro Emocional", modulo: "Juegos de Emociones y Conexión", pagina: 44, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 110, nombre: "La Caja de los Problemas Chiquitos", modulo: "Juegos de Emociones y Conexión", pagina: 45, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 111, nombre: "El Diario de la Familia", modulo: "Juegos de Emociones y Conexión", pagina: 45, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 112, nombre: "El Mapa del Buen Humor", modulo: "Juegos de Emociones y Conexión", pagina: 45, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 113, nombre: "La Estrella de los Logros", modulo: "Juegos de Emociones y Conexión", pagina: 46, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 114, nombre: "El Juego del Corazón Saltarín", modulo: "Juegos de Emociones y Conexión", pagina: 46, tiempo: [5,15], estado: ["risa","aventura"], materiales: ["nada"]},
+            {id: 115, nombre: "El Círculo de los Buenos Deseos", modulo: "Juegos de Emociones y Conexión", pagina: 46, tiempo: [5,15], estado: ["calma"], materiales: ["nada"]},
+            {id: 116, nombre: "El Globo de la Calma", modulo: "Juegos de Emociones y Conexión", pagina: 47, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 117, nombre: "Las Caritas de Hoy", modulo: "Juegos de Emociones y Conexión", pagina: 47, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 118, nombre: "El Tesoro de los Momentos Felices", modulo: "Juegos de Emociones y Conexión", pagina: 47, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 119, nombre: "El Festival de las Canciones Felices", modulo: "Juegos de Emociones y Conexión", pagina: 48, tiempo: [15], estado: ["risa"], materiales: ["magia"]},
+            {id: 120, nombre: "El Árbol de los Agradecimientos", modulo: "Juegos de Emociones y Conexión", pagina: 48, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 121, nombre: "La Ronda de los Deseos Familiares", modulo: "Juegos de Emociones y Conexión", pagina: 48, tiempo: [15], estado: ["calma"], materiales: ["nada"]},
+            {id: 122, nombre: "El Reto de las Caricias de Agradecimiento", modulo: "Juegos de Emociones y Conexión", pagina: 49, tiempo: [5], estado: ["calma"], materiales: ["nada"]},
+            {id: 123, nombre: "La Caja de los Deseos", modulo: "Juegos de Emociones y Conexión", pagina: 49, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 124, nombre: "Río de Palabras Bonitas", modulo: "Juegos de Emociones y Conexión", pagina: 49, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 125, nombre: "La Cuerda de la Confianza", modulo: "Juegos de Emociones y Conexión", pagina: 50, tiempo: [5,15], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 126, nombre: "La Carrera de los Halagos", modulo: "Juegos de Emociones y Conexión", pagina: 50, tiempo: [5,15], estado: ["risa"], materiales: ["nada"]},
+            {id: 127, nombre: "El Camino de los Abrazos Sorpresa", modulo: "Juegos de Emociones y Conexión", pagina: 50, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 128, nombre: "El Sombrero de las Buenas Noticias", modulo: "Juegos de Emociones y Conexión", pagina: 51, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 129, nombre: "El Desafío de las Risas Contagiosas", modulo: "Juegos de Emociones y Conexión", pagina: 51, tiempo: [5], estado: ["risa"], materiales: ["nada"]},
+            {id: 130, nombre: "La Caja de los Aplausos", modulo: "Juegos de Emociones y Conexión", pagina: 51, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 131, nombre: "La Botella de la Calma", modulo: "Juegos de Emociones y Conexión", pagina: 52, tiempo: [5], estado: ["calma"], materiales: ["basicos"]},
+            {id: 132, nombre: "La Fiesta de los Sentimientos", modulo: "Juegos de Emociones y Conexión", pagina: 52, tiempo: [15], estado: ["risa","calma"], materiales: ["basicos"]},
+            {id: 133, nombre: "El Desafío de los Abrazos Largos", modulo: "Juegos de Emociones y Conexión", pagina: 52, tiempo: [5], estado: ["calma"], materiales: ["nada"]},
+            {id: 134, nombre: "Historias de Superhéroes Familiares", modulo: "Juegos de Emociones y Conexión", pagina: 53, tiempo: [15,30], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 135, nombre: "Carrusel de las Emociones", modulo: "Juegos de Emociones y Conexión", pagina: 53, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 136, nombre: "Semillas de Amor", modulo: "Juegos de Emociones y Conexión", pagina: 53, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 137, nombre: "El Buzón de las Sonrisas", modulo: "Juegos de Emociones y Conexión", pagina: 54, tiempo: [5,15], estado: ["calma","risa"], materiales: ["basicos"]},
+            {id: 138, nombre: "El Juego del Gesto Invisible", modulo: "Juegos de Emociones y Conexión", pagina: 54, tiempo: [5], estado: ["calma"], materiales: ["nada"]},
+            {id: 139, nombre: "El Cofre de los Secretos Bonitos", modulo: "Juegos de Emociones y Conexión", pagina: 54, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+
+            // TECNOLOGÍA CON PROPÓSITO (Páginas 59-78) - 50 actividades
+            {id: 140, nombre: "Creadores de Historias Digitales", modulo: "Tecnología con Propósito", pagina: 59, tiempo: [30], estado: ["calma","aventura"], materiales: ["magia"]},
+            {id: 141, nombre: "Exploradores del Espacio Virtual", modulo: "Tecnología con Propósito", pagina: 59, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["magia"]},
+            {id: 142, nombre: "Podcast Familiar Exprés", modulo: "Tecnología con Propósito", pagina: 59, tiempo: [15,30], estado: ["calma","risa"], materiales: ["magia"]},
+            {id: 143, nombre: "Mini Codificadores por Diversión", modulo: "Tecnología con Propósito", pagina: 60, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["magia"]},
+            {id: 144, nombre: "Fotografía de la Naturaleza con Misión", modulo: "Tecnología con Propósito", pagina: 60, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["magia"]},
+            {id: 145, nombre: "Viaje Virtual por Museos del Mundo", modulo: "Tecnología con Propósito", pagina: 60, tiempo: [30], estado: ["calma","aventura"], materiales: ["magia"]},
+            {id: 146, nombre: "Robótica Casera con Material Reciclado", modulo: "Tecnología con Propósito", pagina: 61, tiempo: [30], estado: ["aventura","calma"], materiales: ["basicos","magia"]},
+            {id: 147, nombre: "Creación de Cómics Digitales", modulo: "Tecnología con Propósito", pagina: 61, tiempo: [30], estado: ["calma","aventura"], materiales: ["magia"]},
+            {id: 148, nombre: "Música Digital en Familia", modulo: "Tecnología con Propósito", pagina: 61, tiempo: [15,30], estado: ["calma","risa"], materiales: ["magia"]},
+            {id: 149, nombre: "Diario Digital de Agradecimiento", modulo: "Tecnología con Propósito", pagina: 62, tiempo: [5,15], estado: ["calma"], materiales: ["magia"]},
+            {id: 150, nombre: "Caza del Tesoro con Realidad Aumentada", modulo: "Tecnología con Propósito", pagina: 62, tiempo: [15,30], estado: ["aventura"], materiales: ["magia"]},
+            {id: 151, nombre: "Juego Familiar con AirConsole", modulo: "Tecnología con Propósito", pagina: 62, tiempo: [15,30], estado: ["risa","aventura"], materiales: ["magia"]},
+            {id: 152, nombre: "Mini Documentales Caseros", modulo: "Tecnología con Propósito", pagina: 63, tiempo: [30], estado: ["calma","aventura"], materiales: ["magia"]},
+            {id: 153, nombre: "Vídeo Karaoke en Casa", modulo: "Tecnología con Propósito", pagina: 63, tiempo: [15,30], estado: ["risa"], materiales: ["magia"]},
+            {id: 154, nombre: "Creación de Canales Familiares en YouTube", modulo: "Tecnología con Propósito", pagina: 63, tiempo: [30], estado: ["aventura","calma"], materiales: ["magia"]},
+            {id: 155, nombre: "Bailes en Familia con Just Dance", modulo: "Tecnología con Propósito", pagina: 64, tiempo: [15], estado: ["risa","aventura"], materiales: ["magia"]},
+            {id: 156, nombre: "Mapa Digital de la Imaginación", modulo: "Tecnología con Propósito", pagina: 64, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["magia"]},
+            {id: 157, nombre: "Historias en Video con Efectos Especiales", modulo: "Tecnología con Propósito", pagina: 64, tiempo: [30], estado: ["aventura","risa"], materiales: ["magia"]},
+            {id: 158, nombre: "Experimentos Científicos Guiados por Video", modulo: "Tecnología con Propósito", pagina: 65, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["basicos","magia"]},
+            {id: 159, nombre: "Juegos Educativos en Línea", modulo: "Tecnología con Propósito", pagina: 65, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["magia"]},
+            {id: 160, nombre: "Mapa Digital de Recuerdos Familiares", modulo: "Tecnología con Propósito", pagina: 66, tiempo: [30], estado: ["calma"], materiales: ["magia"]},
+            {id: 161, nombre: "Animaciones Stop Motion Caseras", modulo: "Tecnología con Propósito", pagina: 66, tiempo: [30], estado: ["calma","aventura"], materiales: ["magia"]},
+            {id: 162, nombre: "Quiz Digital en Familia", modulo: "Tecnología con Propósito", pagina: 66, tiempo: [15], estado: ["risa","aventura"], materiales: ["magia"]},
+            {id: 163, nombre: "Creación de Postales Digitales de Viaje", modulo: "Tecnología con Propósito", pagina: 67, tiempo: [15,30], estado: ["calma"], materiales: ["magia"]},
+            {id: 164, nombre: "Pequeños Locutores de Noticias Familiares", modulo: "Tecnología con Propósito", pagina: 67, tiempo: [15,30], estado: ["risa","aventura"], materiales: ["magia"]},
+            {id: 165, nombre: "Creador de Stickers Digitales Personalizados", modulo: "Tecnología con Propósito", pagina: 67, tiempo: [15,30], estado: ["calma","risa"], materiales: ["magia"]},
+            {id: 166, nombre: "Baile con Tapete de Colores y YouTube", modulo: "Tecnología con Propósito", pagina: 68, tiempo: [15], estado: ["risa","aventura"], materiales: ["basicos","magia"]},
+            {id: 167, nombre: "Diseño de Avatares Digitales en Familia", modulo: "Tecnología con Propósito", pagina: 68, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["magia"]},
+            {id: 168, nombre: "Creación de Tarjetas Digitales para Celebraciones", modulo: "Tecnología con Propósito", pagina: 68, tiempo: [15,30], estado: ["calma"], materiales: ["magia"]},
+            {id: 169, nombre: "Reto de Magia Casera en Video", modulo: "Tecnología con Propósito", pagina: 69, tiempo: [15,30], estado: ["risa","aventura"], materiales: ["basicos","magia"]},
+            {id: 170, nombre: "Ejercicio en Video", modulo: "Tecnología con Propósito", pagina: 69, tiempo: [15], estado: ["aventura"], materiales: ["nada","magia"]},
+            {id: 171, nombre: "Desafío de Baile con Filtros", modulo: "Tecnología con Propósito", pagina: 69, tiempo: [15], estado: ["risa"], materiales: ["magia"]},
+            {id: 172, nombre: "Competencia de TikTok Familiar", modulo: "Tecnología con Propósito", pagina: 70, tiempo: [15], estado: ["risa"], materiales: ["magia"]},
+            {id: 173, nombre: "Diseño de Infografías Educativas", modulo: "Tecnología con Propósito", pagina: 70, tiempo: [30], estado: ["calma"], materiales: ["magia"]},
+            {id: 174, nombre: "Show de Talentos en Video", modulo: "Tecnología con Propósito", pagina: 70, tiempo: [30], estado: ["risa","aventura"], materiales: ["magia"]},
+            {id: 175, nombre: "Edición de Videos Familiares", modulo: "Tecnología con Propósito", pagina: 71, tiempo: [30], estado: ["calma","aventura"], materiales: ["magia"]},
+            {id: 176, nombre: "Creación de Presentaciones Interactivas", modulo: "Tecnología con Propósito", pagina: 71, tiempo: [30], estado: ["calma"], materiales: ["magia"]},
+            {id: 177, nombre: "Desafío de Video Trucos Divertidos", modulo: "Tecnología con Propósito", pagina: 72, tiempo: [15], estado: ["risa","aventura"], materiales: ["basicos","magia"]},
+            {id: 178, nombre: "Competencia de Animales Graciosos", modulo: "Tecnología con Propósito", pagina: 72, tiempo: [15], estado: ["risa"], materiales: ["magia"]},
+            {id: 179, nombre: "Parodias de Canciones Famosas en Video", modulo: "Tecnología con Propósito", pagina: 72, tiempo: [30], estado: ["risa"], materiales: ["magia"]},
+            {id: 180, nombre: "Listas Educativas en YouTube", modulo: "Tecnología con Propósito", pagina: 73, tiempo: [15,30], estado: ["calma"], materiales: ["magia"]},
+            {id: 181, nombre: "Videos de Lectura Compartida en YouTube", modulo: "Tecnología con Propósito", pagina: 73, tiempo: [15,30], estado: ["calma"], materiales: ["magia"]},
+            {id: 182, nombre: "Tutoriales Caseros en Video", modulo: "Tecnología con Propósito", pagina: 73, tiempo: [30], estado: ["calma","aventura"], materiales: ["basicos","magia"]},
+            {id: 183, nombre: "Trivia en Línea sobre Valores y Emociones", modulo: "Tecnología con Propósito", pagina: 74, tiempo: [15], estado: ["calma","risa"], materiales: ["magia"]},
+            {id: 184, nombre: "Exploración de Realidad Virtual Educativa", modulo: "Tecnología con Propósito", pagina: 74, tiempo: [30], estado: ["aventura","calma"], materiales: ["magia"]},
+            {id: 185, nombre: "Creación de Pósters Digitales Inspiradores", modulo: "Tecnología con Propósito", pagina: 74, tiempo: [15,30], estado: ["calma"], materiales: ["magia"]},
+            {id: 186, nombre: "Videoblogs de Agradecimiento", modulo: "Tecnología con Propósito", pagina: 75, tiempo: [15,30], estado: ["calma"], materiales: ["magia"]},
+            {id: 187, nombre: "Creación de Mini Series Animadas", modulo: "Tecnología con Propósito", pagina: 75, tiempo: [30], estado: ["aventura","calma"], materiales: ["magia"]},
+            {id: 188, nombre: "Playlist de Canciones Educativas", modulo: "Tecnología con Propósito", pagina: 75, tiempo: [15], estado: ["calma","risa"], materiales: ["magia"]},
+
+            // AVENTURAS AL AIRE LIBRE (Páginas 80-98) - 50 actividades
+            {id: 189, nombre: "El Safari de Colores", modulo: "Aventuras al Aire Libre", pagina: 80, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["nada"]},
+            {id: 190, nombre: "Mini Campamento en el Jardín", modulo: "Aventuras al Aire Libre", pagina: 80, tiempo: [30], estado: ["aventura","risa"], materiales: ["basicos","magia"]},
+            {id: 191, nombre: "El Mapa del Tesoro Natural", modulo: "Aventuras al Aire Libre", pagina: 80, tiempo: [15,30], estado: ["aventura"], materiales: ["basicos"]},
+            {id: 192, nombre: "El Reto de los Sonidos Naturales", modulo: "Aventuras al Aire Libre", pagina: 81, tiempo: [5,15], estado: ["calma"], materiales: ["nada"]},
+            {id: 193, nombre: "La Carrera de las Semillas Voladoras", modulo: "Aventuras al Aire Libre", pagina: 81, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 194, nombre: "El Juego de las Nubes Imaginarias", modulo: "Aventuras al Aire Libre", pagina: 81, tiempo: [15,30], estado: ["calma","risa"], materiales: ["nada"]},
+            {id: 195, nombre: "El Mini Huerto Familiar", modulo: "Aventuras al Aire Libre", pagina: 82, tiempo: [15,30], estado: ["calma"], materiales: ["basicos","magia"]},
+            {id: 196, nombre: "La Carrera de Barquitos de Papel", modulo: "Aventuras al Aire Libre", pagina: 82, tiempo: [15,30], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 197, nombre: "La Caminata de Texturas", modulo: "Aventuras al Aire Libre", pagina: 82, tiempo: [5,15], estado: ["aventura","calma"], materiales: ["nada"]},
+            {id: 198, nombre: "El Juego del Eco", modulo: "Aventuras al Aire Libre", pagina: 83, tiempo: [5,15], estado: ["aventura","calma"], materiales: ["nada"]},
+            {id: 199, nombre: "El Juego del Viento y las Plumas", modulo: "Aventuras al Aire Libre", pagina: 83, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 200, nombre: "La Búsqueda de Tesoros de la Naturaleza", modulo: "Aventuras al Aire Libre", pagina: 83, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["basicos"]},
+            {id: 201, nombre: "La Búsqueda del Arcoíris Natural", modulo: "Aventuras al Aire Libre", pagina: 84, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["basicos"]},
+            {id: 202, nombre: "El Circuito de Saltos Naturales", modulo: "Aventuras al Aire Libre", pagina: 84, tiempo: [15], estado: ["aventura","risa"], materiales: ["nada"]},
+            {id: 203, nombre: "El Hotel de Insectos", modulo: "Aventuras al Aire Libre", pagina: 84, tiempo: [30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 204, nombre: "La Danza del Viento", modulo: "Aventuras al Aire Libre", pagina: 85, tiempo: [5,15], estado: ["calma","risa"], materiales: ["basicos"]},
+            {id: 205, nombre: "El Juego de las Piedras de la Suerte", modulo: "Aventuras al Aire Libre", pagina: 85, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 206, nombre: "El Desafío de los 5 Sentidos", modulo: "Aventuras al Aire Libre", pagina: 85, tiempo: [15], estado: ["aventura","calma"], materiales: ["nada"]},
+            {id: 207, nombre: "El Picnic de Historias", modulo: "Aventuras al Aire Libre", pagina: 86, tiempo: [30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 208, nombre: "La Carrera de Hojas al Río", modulo: "Aventuras al Aire Libre", pagina: 86, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["nada"]},
+            {id: 209, nombre: "El Juego de las Sombras Creativas", modulo: "Aventuras al Aire Libre", pagina: 86, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 210, nombre: "La Carrera de Caracoles", modulo: "Aventuras al Aire Libre", pagina: 87, tiempo: [15], estado: ["calma"], materiales: ["nada"]},
+            {id: 211, nombre: "El Atrapa-Sombras", modulo: "Aventuras al Aire Libre", pagina: 87, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["nada"]},
+            {id: 212, nombre: "El Explorador de Formas Naturales", modulo: "Aventuras al Aire Libre", pagina: 87, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["basicos"]},
+            {id: 213, nombre: "La Aventura del Mapa Perdido", modulo: "Aventuras al Aire Libre", pagina: 89, tiempo: [15,30], estado: ["aventura"], materiales: ["basicos"]},
+            {id: 214, nombre: "La Carrera de Ranas Saltarinas", modulo: "Aventuras al Aire Libre", pagina: 89, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["nada"]},
+            {id: 215, nombre: "El Reto de la Sombrilla Natural", modulo: "Aventuras al Aire Libre", pagina: 89, tiempo: [5,15], estado: ["aventura","calma"], materiales: ["nada"]},
+            {id: 216, nombre: "El Piso es Lava", modulo: "Aventuras al Aire Libre", pagina: 90, tiempo: [5,15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 217, nombre: "El Juego del Escondite de la Naturaleza", modulo: "Aventuras al Aire Libre", pagina: 90, tiempo: [15], estado: ["aventura"], materiales: ["nada"]},
+            {id: 218, nombre: "El Safari Fotográfico Familiar", modulo: "Aventuras al Aire Libre", pagina: 90, tiempo: [30], estado: ["aventura","calma"], materiales: ["magia"]},
+            {id: 219, nombre: "La Torre de Palitos", modulo: "Aventuras al Aire Libre", pagina: 91, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["nada"]},
+            {id: 220, nombre: "La Carrera de Hormigas", modulo: "Aventuras al Aire Libre", pagina: 91, tiempo: [15], estado: ["calma"], materiales: ["nada"]},
+            {id: 221, nombre: "El Juego del Árbol Amigo", modulo: "Aventuras al Aire Libre", pagina: 91, tiempo: [5,15], estado: ["calma"], materiales: ["nada"]},
+            {id: 222, nombre: "El Festival de Burbujas Gigantes", modulo: "Aventuras al Aire Libre", pagina: 92, tiempo: [5,15], estado: ["risa","aventura"], materiales: ["basicos"]},
+            {id: 223, nombre: "La Ruta del Tesoro Botánico", modulo: "Aventuras al Aire Libre", pagina: 92, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["basicos"]},
+            {id: 224, nombre: "La Aventura del Puente Natural", modulo: "Aventuras al Aire Libre", pagina: 93, tiempo: [15,30], estado: ["aventura"], materiales: ["nada"]},
+            {id: 225, nombre: "El Juego de los Colores del Atardecer", modulo: "Aventuras al Aire Libre", pagina: 93, tiempo: [15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 226, nombre: "El Observador de Aves", modulo: "Aventuras al Aire Libre", pagina: 93, tiempo: [15,30], estado: ["calma"], materiales: ["basicos"]},
+            {id: 227, nombre: "La Ruta de los Pasos Silenciosos", modulo: "Aventuras al Aire Libre", pagina: 94, tiempo: [5,15], estado: ["calma"], materiales: ["nada"]},
+            {id: 228, nombre: "La Observación del Cielo", modulo: "Aventuras al Aire Libre", pagina: 94, tiempo: [15], estado: ["calma"], materiales: ["nada"]},
+            {id: 229, nombre: "El Juego del Perfume del Bosque", modulo: "Aventuras al Aire Libre", pagina: 94, tiempo: [5,15], estado: ["calma"], materiales: ["nada"]},
+            {id: 230, nombre: "El Juego del Reloj Solar", modulo: "Aventuras al Aire Libre", pagina: 95, tiempo: [15,30], estado: ["calma","aventura"], materiales: ["basicos"]},
+            {id: 231, nombre: "La Ruta de los Aromas Naturales", modulo: "Aventuras al Aire Libre", pagina: 95, tiempo: [5,15], estado: ["calma"], materiales: ["basicos"]},
+            {id: 232, nombre: "La Caminata de Siluetas Nocturnas", modulo: "Aventuras al Aire Libre", pagina: 95, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["basicos"]},
+            {id: 233, nombre: "El Juego del Viento y las Cometas", modulo: "Aventuras al Aire Libre", pagina: 96, tiempo: [15,30], estado: ["aventura"], materiales: ["basicos","magia"]},
+            {id: 234, nombre: "La Senda de los Colores Naturales", modulo: "Aventuras al Aire Libre", pagina: 96, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["basicos"]},
+            {id: 235, nombre: "El Juego del Río Imaginario", modulo: "Aventuras al Aire Libre", pagina: 96, tiempo: [15], estado: ["aventura","risa"], materiales: ["basicos"]},
+            {id: 236, nombre: "El Observador de Nubes y Estrellas", modulo: "Aventuras al Aire Libre", pagina: 97, tiempo: [15,30], estado: ["calma"], materiales: ["nada"]},
+            {id: 237, nombre: "La Búsqueda de Rocas Especiales", modulo: "Aventuras al Aire Libre", pagina: 97, tiempo: [15,30], estado: ["aventura","calma"], materiales: ["basicos"]},
+            {id: 238, nombre: "El Juego del Árbol Misterioso", modulo: "Aventuras al Aire Libre", pagina: 98, tiempo: [5,15], estado: ["aventura","calma"], materiales: ["basicos"]},
+
+            // MINI PROYECTOS ESPECIALES (Páginas 100-121) - 50 actividades
+            {id: 239, nombre: "Mini Exposición de Arte", modulo: "Mini Proyectos Especiales", pagina: 100, tiempo: [30], estado: ["calma","risa"], materiales: ["basicos","magia"]},
+            {id: 240, nombre: "Día del Inventor", modulo: "Mini Proyectos Especiales", pagina: 100, tiempo: [30], estado: ["aventura","risa"], materiales: ["basicos","magia"]},
+            {id: 
