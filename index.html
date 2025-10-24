@@ -572,4 +572,118 @@
             // MINI PROYECTOS ESPECIALES (Páginas 100-121) - 50 actividades
             {id: 239, nombre: "Mini Exposición de Arte", modulo: "Mini Proyectos Especiales", pagina: 100, tiempo: [30], estado: ["calma","risa"], materiales: ["basicos","magia"]},
             {id: 240, nombre: "Día del Inventor", modulo: "Mini Proyectos Especiales", pagina: 100, tiempo: [30], estado: ["aventura","risa"], materiales: ["basicos","magia"]},
-            {id: 
+            // ... (aquí continuarían las demás actividades)
+        ];
+
+        // Variables para almacenar las selecciones
+        let selecciones = {
+            tiempo: null,
+            estado: null,
+            materiales: null
+        };
+
+        // Función para manejar los clicks en los botones de selección
+        function manejarSeleccion(boton) {
+            const categoria = boton.dataset.category;
+            const valor = boton.dataset.value;
+            
+            // Remover clase active de todos los botones de la misma categoría
+            const botonesCategoria = document.querySelectorAll(`[data-category="${categoria}"]`);
+            botonesCategoria.forEach(btn => btn.classList.remove('active'));
+            
+            // Agregar clase active al botón clickeado
+            boton.classList.add('active');
+            
+            // Guardar la selección
+            selecciones[categoria] = valor;
+            
+            // Verificar si todas las categorías están seleccionadas
+            verificarSeleccionesCompletas();
+        }
+
+        // Función para verificar si todas las categorías están seleccionadas
+        function verificarSeleccionesCompletas() {
+            const todasSeleccionadas = selecciones.tiempo && selecciones.estado && selecciones.materiales;
+            const generarBtn = document.getElementById('generarBtn');
+            
+            if (todasSeleccionadas) {
+                generarBtn.disabled = false;
+            } else {
+                generarBtn.disabled = true;
+            }
+        }
+
+        // Función para generar actividad aleatoria basada en las selecciones
+        function generarActividad() {
+            // Filtrar actividades que coincidan con las selecciones
+            const actividadesFiltradas = actividades.filter(actividad => {
+                return actividad.tiempo.includes(parseInt(selecciones.tiempo)) &&
+                       actividad.estado.includes(selecciones.estado) &&
+                       actividad.materiales.includes(selecciones.materiales);
+            });
+            
+            // Si no hay actividades que coincidan, mostrar un mensaje
+            if (actividadesFiltradas.length === 0) {
+                alert('No se encontraron actividades que coincidan con tus criterios. ¡Intenta con otras combinaciones!');
+                return;
+            }
+            
+            // Seleccionar una actividad aleatoria
+            const actividadAleatoria = actividadesFiltradas[Math.floor(Math.random() * actividadesFiltradas.length)];
+            
+            // Mostrar la actividad
+            mostrarActividad(actividadAleatoria);
+        }
+
+        // Función para mostrar la actividad en la interfaz
+        function mostrarActividad(actividad) {
+            // Mostrar el contenedor de resultados
+            const resultadoContainer = document.getElementById('resultado');
+            resultadoContainer.style.display = 'block';
+            
+            // Actualizar los tags seleccionados
+            const selectedTags = document.getElementById('selectedTags');
+            selectedTags.innerHTML = `
+                <div class="tag">${selecciones.tiempo} min</div>
+                <div class="tag">${selecciones.estado}</div>
+                <div class="tag">${selecciones.materiales}</div>
+            `;
+            
+            // Actualizar la información de la actividad
+            document.getElementById('actividadNombre').textContent = actividad.nombre;
+            document.getElementById('actividadModulo').textContent = actividad.modulo;
+            document.getElementById('actividadPagina').textContent = `Página ${actividad.pagina}`;
+            document.getElementById('paginaNumero').textContent = actividad.pagina;
+            
+            // Hacer scroll suave hacia el resultado
+            resultadoContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Función para resetear y generar nueva actividad
+        function generarNuevaActividad() {
+            // Ocultar resultado
+            document.getElementById('resultado').style.display = 'none';
+            
+            // Generar nueva actividad
+            generarActividad();
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Agregar event listeners a los botones de selección
+            const botonesSeleccion = document.querySelectorAll('.selector-btn');
+            botonesSeleccion.forEach(boton => {
+                boton.addEventListener('click', function() {
+                    manejarSeleccion(this);
+                });
+            });
+            
+            // Event listener para el botón generar
+            document.getElementById('generarBtn').addEventListener('click', generarActividad);
+            
+            // Event listener para el botón nueva actividad
+            document.getElementById('nuevaActividadBtn').addEventListener('click', generarNuevaActividad);
+        });
+    </script>
+</body>
+</html>
